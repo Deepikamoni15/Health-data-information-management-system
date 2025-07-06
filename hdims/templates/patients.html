@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block title %}Patients - HDIMS{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Patient Management</h2>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+            <i class="bi bi-plus-lg"></i> Add Patient
+        </button>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">Patient Records</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Gender</th>
+                        <th>Health Scheme</th>
+                        <th>Last Visit</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                    <tr>
+                        <td>{{ patient.id }}</td>
+                        <td>{{ patient.name }}</td>
+                        <td>{{ patient.age }}</td>
+                        <td>{{ patient.gender }}</td>
+                        <td><span class="badge bg-primary">{{ patient.scheme }}</span></td>
+                        <td>{{ patient.last_visit }}</td>
+                        <td>
+                            {% if patient.status == 'Active' %}
+                            <span class="badge bg-success">Active</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-outline-primary">View</button>
+                            <button class="btn btn-sm btn-outline-secondary">Edit</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Patient Modal -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-labelledby="addPatientModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addPatientModalLabel">Add New Patient</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addPatientForm">
+                    <div class="mb-3">
+                        <label for="patientName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="patientName" required>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="patientAge" class="form-label">Age</label>
+                            <input type="number" class="form-control" id="patientAge" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="patientGender" class="form-label">Gender</label>
+                            <select class="form-select" id="patientGender" required>
+                                <option value="">Select</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="patientScheme" class="form-label">Health Scheme</label>
+                        <select class="form-select" id="patientScheme" required>
+                            <option value="">Select</option>
+                            <option value="Ayushman Bharat">Ayushman Bharat</option>
+                            <option value="PMJAY">PMJAY</option>
+                            <option value="State Health">State Health</option>
+                            <option value="Employee Health">Employee Health</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="patientStatus" class="form-label">Status</label>
+                        <select class="form-select" id="patientStatus" required>
+                            <option value="Active">Active</option>
+                            <option value="Inactive">Inactive</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" form="addPatientForm" class="btn btn-primary">Save Patient</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

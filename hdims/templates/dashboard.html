@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - HDIMS{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card health-card bg-primary text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Patients</h5>
+                <h2 class="card-text">{{ total_patients }}</h2>
+                <p class="card-text">Registered in system</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card health-card bg-success text-white">
+            <div class="card-body">
+                <h5 class="card-title">Active Schemes</h5>
+                <h2 class="card-text">{{ active_schemes }}</h2>
+                <p class="card-text">Health programs</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card health-card bg-info text-white">
+            <div class="card-body">
+                <h5 class="card-title">Total Claims</h5>
+                <h2 class="card-text">{{ total_claims }}</h2>
+                <p class="card-text">Processed</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="chart-container">
+            <h4>Health Scheme Enrollment</h4>
+            <canvas id="healthMetricsChart" height="300"></canvas>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Recent Patients</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for patient in recent_patients %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ patient.name }}
+                        <span class="badge bg-primary rounded-pill">{{ patient.scheme }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Health Schemes Overview</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Scheme Name</th>
+                                <th>Enrolled</th>
+                                <th>Claims</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scheme in schemes %}
+                            <tr>
+                                <td>{{ scheme.name }}</td>
+                                <td>{{ scheme.enrolled }}</td>
+                                <td>{{ scheme.claims }}</td>
+                                <td>
+                                    {% if scheme.active %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-primary">View</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('healthMetricsChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ schemes|map(attribute='name')|list|tojson }},
+                datasets: [{
+                    label: 'Enrolled',
+                    data: {{ schemes|map(attribute='enrolled')|list|tojson }},
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }, {
+                    label: 'Claims',
+                    data: {{ schemes|map(attribute='claims')|list|tojson }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}
